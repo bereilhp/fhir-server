@@ -1,5 +1,13 @@
 {
+  "name": "fhir-server",
+  "version": "1.0.0",
+  "description": "Node.js FHIR MongoDB Server",
+  "scripts": {
+    "start": "node src/api/server.js"
+  },
   "dependencies": {
-    "express": "^4.18.2"
+    "dotenv": "^16.4.4",
+    "express": "^4.18.2",
+    "mongodb": "^6.3.0"
   }
 }
