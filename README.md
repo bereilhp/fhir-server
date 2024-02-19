@@ -1,2 +1,2 @@
 # fhir-server
-Node.js FHIR MongoDB Server
+Node.js FHIR MongoDB Atlas Server
