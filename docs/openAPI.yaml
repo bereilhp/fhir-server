@@ -14,15 +14,51 @@ paths:
       summary: Get all the patients from the DB
       description: Query the DB for all the patients
       responses:
-        '200':
+        "200":
           description: Fetch all patients
           content:
             application/json:
               example:
                 - resourceType: Patient
-                  # Example for GET response
-                  # Include GET response example here...
-        '500':
+                  identifier:
+                    - system: http://example.org/patient
+                      value: "12345"
+                  active: true
+                  name:
+                    - use: official
+                      family: Doe
+                      given:
+                        - John
+                  telecom:
+                    - system: phone
+                      value: "555-555-5555"
+                      use: home
+                  gender: male
+                  birthDate: "1980-01-01"
+                  address:
+                    - use: home
+                      line:
+                        - "123 Main St"
+                      city: Anytown
+                      state: NY
+                      postalCode: "12345"
+                      country: US
+                  maritalStatus:
+                    coding:
+                      - system: http://terminology.hl7.org/CodeSystem/v3-MaritalStatus
+                        code: M
+                        display: Married
+                  communication:
+                    - language:
+                        coding:
+                          - system: urn:ietf:bcp:47
+                            code: en-US
+                            display: English
+                        text: English
+                      preferred: true
+                  managingOrganization:
+                    reference: Organization/1
+        "500":
           description: Error fetching patients
           content:
             application/json:
@@ -37,7 +73,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Patient'
+              $ref: "#/components/schemas/Patient"
             example:
               "_id": "65d4781233b39ed6b9c56f07"
               "resourceType": "Patient"
@@ -80,7 +116,7 @@ paths:
               "managingOrganization":
                 reference: "Organization/1"
       responses:
-        '201':
+        "201":
           description: Patient added successfully
           content:
             application/json:
@@ -88,13 +124,13 @@ paths:
                 acknowledged: true
                 insertedId: "65d4781233b39ed6b9c56f07"
 
-        '400':
+        "400":
           description: Invalid patient data
           content:
             application/json:
               example:
                 error: "Invalid patient data"
-        '500':
+        "500":
           description: Error adding patient
           content:
             application/json:
