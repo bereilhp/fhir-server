@@ -12,95 +12,264 @@ paths:
   /patients:
     get:
       summary: Get all the patients from the DB
-      description: Query the db for all the patients 
+      description: Query the DB for all the patients
       responses:
         '200':
-          description: Fetch all patients 
-          content:
-            application/json:
-              example: 
-                - resourceType: Patient
-                  identifier:
-                    system: http://example.org/patient
-                    value: "12345"
-                  active: true
-                  name:
-                    - use: official
-                      family: Doe
-                      given:
-                        - John
-                  telecom:
-                    - system: phone
-                      value: "555-555-5555"
-                      use: home
-                  gender: male
-                  birthDate: "1980-01-01"
-                  address:
-                    - use: home
-                      line:
-                        - "123 Main St"
-                      city: Anytown
-                      state: NY
-                      postalCode: "12345"
-                      country: US
-                  maritalStatus:
-                    coding:
-                      - system: http://terminology.hl7.org/CodeSystem/v3-MaritalStatus
-                        code: M
-                        display: Married
-                  communication:
-                    - language:
-                        coding:
-                          - system: urn:ietf:bcp:47
-                            code: en-US
-                            display: English
-                        text: English
-                      preferred: true
-                  managingOrganization:
-                    reference: Organization/1
-                - resourceType: Patient
-                  identifier:
-                    system: http://example.org/patient
-                    value: "67890"
-                  active: true
-                  name:
-                    - use: official
-                      family: Smith
-                      given:
-                        - Jane
-                  telecom:
-                    - system: phone
-                      value: "555-123-4567"
-                      use: home
-                  gender: female
-                  birthDate: "1975-05-20"
-                  address:
-                    - use: home
-                      line:
-                        - "456 Oak St"
-                      city: Somewhere
-                      state: CA
-                      postalCode: "98765"
-                      country: US
-                  maritalStatus:
-                    coding:
-                      - system: http://terminology.hl7.org/CodeSystem/v3-MaritalStatus
-                        code: S
-                        display: Single
-                  communication:
-                    - language:
-                        coding:
-                          - system: urn:ietf:bcp:47
-                            code: en-US
-                            display: English
-                        text: English
-                      preferred: true
-                  managingOrganization:
-                    reference: Organization/2
-        '500':
-          description: Error fetching patients 
+          description: Fetch all patients
           content:
             application/json:
               example:
-                error: "Internal server Error" 
-  
+                - resourceType: Patient
+                  # Example for GET response
+                  # Include GET response example here...
+        '500':
+          description: Error fetching patients
+          content:
+            application/json:
+              example:
+                error: "Internal server Error"
+
+    post:
+      summary: Add a new patient to the DB
+      description: Add a new patient to the database
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Patient'
+            example:
+              "_id": "65d4781233b39ed6b9c56f07"
+              "resourceType": "Patient"
+              "identifier":
+                - system: "http://example.org/patient"
+                  value: "12345"
+              "active": true
+              "name":
+                - use: "official"
+                  family: "Doe"
+                  given:
+                    - "John"
+              "telecom":
+                - system: "phone"
+                  value: "555-555-5555"
+                  use: "home"
+              "gender": "male"
+              "birthDate": "1980-01-01"
+              "address":
+                - use: "home"
+                  line:
+                    - "123 Main St"
+                  city: "Anytown"
+                  state: "NY"
+                  postalCode: "12345"
+                  country: "US"
+              "maritalStatus":
+                coding:
+                  - system: "http://terminology.hl7.org/CodeSystem/v3-MaritalStatus"
+                    code: "M"
+                    display: "Married"
+              "communication":
+                - language:
+                    coding:
+                      - system: "urn:ietf:bcp:47"
+                        code: "en-US"
+                        display: "English"
+                    text: "English"
+                  preferred: true
+              "managingOrganization":
+                reference: "Organization/1"
+      responses:
+        '201':
+          description: Patient added successfully
+          content:
+            application/json:
+              example:
+                acknowledged: true
+                insertedId: "65d4781233b39ed6b9c56f07"
+
+        '400':
+          description: Invalid patient data
+          content:
+            application/json:
+              example:
+                error: "Invalid patient data"
+        '500':
+          description: Error adding patient
+          content:
+            application/json:
+              example:
+                error: "Internal server Error"
+
+components:
+  schemas:
+    Patient:
+      type: object
+      properties:
+        resourceType:
+          type: string
+        id:
+          type: string
+        identifier:
+          type: array
+          items:
+            type: object
+            properties:
+              system:
+                type: string
+              value:
+                type: string
+            required:
+              - system
+              - value
+        active:
+          type: boolean
+        name:
+          type: array
+          items:
+            type: object
+            properties:
+              use:
+                type: string
+              family:
+                type: string
+              given:
+                type: array
+                items:
+                  type: string
+            required:
+              - use
+              - family
+              - given
+        telecom:
+          type: array
+          items:
+            type: object
+            properties:
+              system:
+                type: string
+              value:
+                type: string
+              use:
+                type: string
+            required:
+              - system
+              - value
+              - use
+        gender:
+          type: string
+          enum:
+            - male
+            - female
+            - other
+            - unknown
+        birthDate:
+          type: string
+          format: date
+        address:
+          type: array
+          items:
+            type: object
+            properties:
+              use:
+                type: string
+              line:
+                type: array
+                items:
+                  type: string
+              city:
+                type: string
+              state:
+                type: string
+              postalCode:
+                type: string
+              country:
+                type: string
+            required:
+              - use
+              - line
+              - city
+              - state
+              - postalCode
+              - country
+        maritalStatus:
+          type: object
+          properties:
+            coding:
+              type: array
+              items:
+                type: object
+                properties:
+                  system:
+                    type: string
+                  code:
+                    type: string
+                  display:
+                    type: string
+                required:
+                  - system
+                  - code
+                  - display
+          required:
+            - coding
+        communication:
+          type: array
+          items:
+            type: object
+            properties:
+              language:
+                type: object
+                properties:
+                  coding:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        system:
+                          type: string
+                        code:
+                          type: string
+                        display:
+                          type: string
+                      required:
+                        - system
+                        - code
+                        - display
+                  text:
+                    type: string
+                required:
+                  - coding
+                  - text
+              preferred:
+                type: boolean
+            required:
+              - language
+              - preferred
+        generalPractitioner:
+          type: array
+          items:
+            type: object
+            properties:
+              reference:
+                type: string
+            required:
+              - reference
+        managingOrganization:
+          type: object
+          properties:
+            reference:
+              type: string
+          required:
+            - reference
+        link:
+          type: array
+          items:
+            type: object
+            properties:
+              other:
+                type: string
+              type:
+                type: string
+            required:
+              - other
+              - type
