@@ -75,7 +75,6 @@ paths:
             schema:
               $ref: "#/components/schemas/Patient"
             example:
-              "_id": "65d4781233b39ed6b9c56f07"
               "resourceType": "Patient"
               "identifier":
                 - system: "http://example.org/patient"
