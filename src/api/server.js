@@ -11,7 +11,7 @@ const ajv = new Ajv({discriminator: true});
 addFormats(ajv);
 const PORT = 3456;
 
-const validate = ajv.compile(patientSchema);
+const patientValidator = ajv.compile(patientSchema);
 
 app.use(bodyParser.json());
 
@@ -34,13 +34,13 @@ app.get("/patients", async function (req, res) {
 
 app.post("/patients", async function (req, res) {
   try {
-    const isValid = validate(req.body);
+    const isValid = patientValidator(req.body);
 
     if (!isValid) {
-      console.error("Error validating patient data:", validate.errors);
+      console.error("Error validating patient data:", patientValidator.errors);
       return res.status(400).json({
         error: "Invalid patient data",
-        errors: validate.errors,
+        errors: patientValidator.errors,
       });
     } else {
       console.log("Patient data is valid");
