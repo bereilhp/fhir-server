@@ -2,15 +2,18 @@ const { ApolloServer, gql } = require("apollo-server");
 const { connectToDatabase } = require("../db/connectAtlas");
 
 const typeDefs = gql`
+  type Patient {
+    _id: ID
+    resourceType: String!
+    identifier: [Identifier!]!
+    active: Boolean
+    gender: String!
+    birthDate: String!
+  }
+
   type Identifier {
     system: String!
     value: String!
-  }
-
-  type Patient {
-    id: ID
-    resourceType: String!
-    identifier: [Identifier!]!
   }
 
   type Query {
