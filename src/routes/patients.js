@@ -1,48 +1,31 @@
 const express = require("express");
+const router = express.Router();
 const { connectToDatabase } = require("../db/connectAtlas");
-const bodyParser = require("body-parser");
 const Ajv = require("ajv");
 const addFormats = require("ajv-formats");
+const patientSchema = require("../schemas/patient.json");
+const { constructQueryFromParameters } = require("../search/patient");
 
-const patientSchema = require("../schemas/patient.json")
-
-const app = express();
-const ajv = new Ajv({discriminator: true});
+const ajv = new Ajv({ discriminator: true });
 addFormats(ajv);
-const PORT = 3456;
-
 const patientValidator = ajv.compile(patientSchema);
 
-app.use(bodyParser.json());
-
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
-
-app.get("/patients", async function (req, res) {
+router.get("/", async function (req, res) {
   try {
     const db = await connectToDatabase();
     const collection = db.collection("patients");
 
-    let query = {};
+    const query = constructQueryFromParameters(req.query);
 
-    if (req.query.family) {
-      query['name.family'] = { $regex: req.query.family, $options: 'i' };
-    }
-
-    console.log(query);
-
-    const patients = await collection.find(query).toArray();
-
-    console.log("GET made to /patients endpoint with query params");
-    res.json(patients);
+    const results = await collection.find(query).toArray();
+    res.json(results);
   } catch (error) {
-    console.error("Error fetching patients with family name search:", error);
+    console.error("Error during search:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
 
-app.post("/patients", async function (req, res) {
+router.post("/", async function (req, res) {
   try {
     const isValid = patientValidator(req.body);
 
@@ -52,15 +35,12 @@ app.post("/patients", async function (req, res) {
         error: "Invalid patient data",
         errors: patientValidator.errors,
       });
-    } else {
-      console.log("Patient data is valid");
     }
 
     const db = await connectToDatabase();
     const collection = db.collection("patients");
     const patient = req.body;
     const result = await collection.insertOne(patient);
-    console.log("POST made to /patients endpoint");
     console.log("Patient added");
     res.status(201).json(result);
   } catch (error) {
@@ -68,3 +48,5 @@ app.post("/patients", async function (req, res) {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
+module.exports = router;
