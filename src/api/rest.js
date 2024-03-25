@@ -23,11 +23,21 @@ app.get("/patients", async function (req, res) {
   try {
     const db = await connectToDatabase();
     const collection = db.collection("patients");
-    const patients = await collection.find().toArray();
-    console.log("GET made to /patients endpoint");
+
+    let query = {};
+
+    if (req.query.family) {
+      query['name.family'] = { $regex: req.query.family, $options: 'i' };
+    }
+
+    console.log(query);
+
+    const patients = await collection.find(query).toArray();
+
+    console.log("GET made to /patients endpoint with query params");
     res.json(patients);
   } catch (error) {
-    console.error("Error fetching patients:", error);
+    console.error("Error fetching patients with family name search:", error);
     res.status(500).json({ error: "Internal server error" });
   }
 });
