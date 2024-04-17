@@ -1,14 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const { connectToDatabase } = require("../db/connectAtlas");
-const Ajv = require("ajv");
-const addFormats = require("ajv-formats");
-const patientSchema = require("../schemas/patient.json");
 const { constructQueryFromParameters } = require("../search/patient");
-
-const ajv = new Ajv({ discriminator: true });
-addFormats(ajv);
-const patientValidator = ajv.compile(patientSchema);
+const { ObjectId } = require("mongodb");
+const { transformToFhirMongoFormat } = require("../metadata/transformPatient");
 
 router.get("/", async function (req, res) {
   try {
@@ -27,20 +22,11 @@ router.get("/", async function (req, res) {
 
 router.post("/", async function (req, res) {
   try {
-    const isValid = patientValidator(req.body);
-
-    if (!isValid) {
-      console.error("Error validating patient data:", patientValidator.errors);
-      return res.status(400).json({
-        error: "Invalid patient data",
-        errors: patientValidator.errors,
-      });
-    }
-
     const db = await connectToDatabase();
     const collection = db.collection("patients");
     const patient = req.body;
-    const result = await collection.insertOne(patient);
+    const transformedPatient = transformToFhirMongoFormat(patient);
+    const result = await collection.insertOne(transformedPatient);
     console.log("Patient added");
     res.status(201).json(result);
   } catch (error) {
