@@ -1,0 +1,10 @@
+services:
+  fhir-server:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: fhir-server:latest
+    ports:
+      - "3456:3456"
+    restart: always
+    container_name: fhir-server
