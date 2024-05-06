@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "description": "Node.js FHIR MongoDB Server",
   "scripts": {
-    "rest": "node src/app.js",
-    "gql": "node src/api/graphql.js"
+    "rest": "node src/app.js"
   },
   "dependencies": {
     "ajv": "^8.12.0",
