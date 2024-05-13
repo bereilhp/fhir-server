@@ -7,7 +7,7 @@ const app = express();
 const PORT = 3456;
 
 app.use(bodyParser.json());
-app.use(morgan("dev"));
+app.use(morgan("tiny"));
 
 app.use("/appointment", appointmentRoutes);
 
