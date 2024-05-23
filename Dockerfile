@@ -4,4 +4,4 @@ COPY package*.json ./
 RUN npm i  
 COPY . .  
 EXPOSE 3456
-CMD ["npm", "run", "rest"]
+CMD ["npm", "run", "server"]
